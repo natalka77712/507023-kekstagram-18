@@ -1,24 +1,20 @@
 'use strict';
 
 (function () {
-  var AMOUNT_IMAGES = 25;
 
   var bigPicture = document.querySelector('.big-picture');
   var pictureCloseButton = bigPicture.querySelector('.big-picture__cancel');
   bigPicture.querySelector('.comments-loader').classList.add('visually-hidden');
   bigPicture.querySelector('.social__comment-count').classList.add('visually-hidden');
   var similarPictures = document.querySelector('.pictures');
+  var main = document.querySelector('main');
   var similarPictureTemplate = document.querySelector('#picture')
       .content
       .querySelector('.picture');
 
-  var generatePhotosArray = function () {
-    var photos = [];
-    for (var i = 0; i < AMOUNT_IMAGES; i++) {
-      photos.push(window.data.generatePhotoImage(i));
-    }
-    return photos;
-  };
+  var errorTemplate = document.querySelector('#error')
+      .content
+      .querySelector('.error');
 
   var renderPhoto = function (photo) {
     var photoItem = similarPictureTemplate.cloneNode(true);
@@ -37,14 +33,6 @@
     return photoItem;
   };
 
-  var renderPhotos = function (photos) {
-    var fragment = document.createDocumentFragment();
-    for (var i = 0; i < photos.length; i++) {
-      fragment.appendChild(renderPhoto(photos[i]));
-    }
-    similarPictures.appendChild(fragment);
-  };
-
   var renderBigPicture = function (photo) {
     bigPicture.querySelector('.big-picture__img img').src = photo.url;
     bigPicture.querySelector('.likes-count').textContent = photo.likes;
@@ -61,12 +49,6 @@
     }
   };
 
-  var init = function () {
-    var photosArray = generatePhotosArray();
-    renderPhotos(photosArray);
-    renderBigPicture(photosArray[0]);
-  };
-
   var onPictureEscPress = function (evt) {
     window.util.onKeyEscPress(evt, closePreview);
   };
@@ -79,6 +61,29 @@
   pictureCloseButton.addEventListener('click', function () {
     closePreview();
   });
+
+  var successHandler = function (photos) {
+    var fragment = document.createDocumentFragment();
+
+    for (var i = 0; i < photos.length; i++) {
+      fragment.appendChild(renderPhoto(photos[i]));
+    }
+    similarPictures.appendChild(fragment);
+
+    if (document.querySelector('.error')) {
+      document.querySelector('.error').remove();
+    }
+  };
+
+  var errorHandler = function (errorMessage) {
+    var errorElement = errorTemplate.cloneNode(true);
+    errorElement.querySelector('.error__title').textContent = errorMessage;
+    main.appendChild(errorElement);
+  };
+
+  var init = function () {
+    window.backend.load(successHandler, errorHandler);
+  };
 
   init();
 
