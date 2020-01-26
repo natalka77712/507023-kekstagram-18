@@ -76,9 +76,9 @@
   };
 
   var errorHandler = function (errorMessage) {
-    var errorElement = errorTemplate.cloneNode(true);
-    errorElement.querySelector('.error__title').textContent = errorMessage;
-    main.appendChild(errorElement);
+    var errorNode = errorTemplate.cloneNode(true);
+    errorNode.querySelector('.error__title').textContent = errorMessage;
+    main.appendChild(errorNode);
   };
 
   var init = function () {
@@ -89,5 +89,6 @@
 
   window.gallery = {
     similarPictures: similarPictures,
+    main: main,
   };
 })();
